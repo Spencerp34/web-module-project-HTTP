@@ -10,6 +10,7 @@ import EditMovieForm from './components/EditMovieForm';
 import FavoriteMovieList from './components/FavoriteMovieList';
 
 import axios from 'axios';
+import AddMovieForm from "./components/AddMovieForm";
 
 const App = (props) => {
   const [movies, setMovies] = useState([]);
@@ -26,11 +27,21 @@ const App = (props) => {
   }, []);
 
   const deleteMovie = (id)=> {
+    axios
+            .delete(`http://localhost:5000/api/movies/${id}`)
+            .then(res => {
+                const newList = movies.filter(item => item.id !== id)
+
+                setMovies(newList)
+            })
+            .catch(err => {
+                console.log(err)
+            })
   }
 
-  const addToFavorites = (movie) => {
+  // const addToFavorites = (movie) => {
     
-  }
+  // }
 
   return (
     <div>
@@ -45,19 +56,25 @@ const App = (props) => {
         
           <Switch>
             <Route path="/movies/edit/:id">
+              <EditMovieForm {...props} setMovies={setMovies} />
             </Route>
 
             <Route path="/movies/:id">
-              <Movie/>
+              <Movie deleteMovie={deleteMovie} />
             </Route>
 
             <Route path="/movies">
               <MovieList movies={movies}/>
             </Route>
 
+            <Route path='/movies/add'>
+              <AddMovieForm />
+            </Route>
+
             <Route path="/">
               <Redirect to="/movies"/>
             </Route>
+
           </Switch>
         </div>
       </div>
